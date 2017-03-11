@@ -52,10 +52,10 @@ python -m nltk.downloader vader_lexicon
 from stocktalk import streaming
 
 # Credentials to access Twitter API 
-API_KEY = 'J82WF0b0sxRU1l8mZDEKEzeQR'
-API_SECRET = 'DcFs1kX416KDWCMvE4H7rnvivHu6P41c0S9HZMgLtdmm3r8WqQ'
-ACCESS_TOKEN = '248780999-CEol6eP8XkopuCbFOTAjwyUPgisTHVlWlrag8FiD'
-ACCESS_TOKEN_SECRET = 'CRQX9XmiwQVHMnJ7Cm4RtDd65ZFzuWdMNt08zFuCbqM15'
+API_KEY = '####'
+API_SECRET = '####'
+ACCESS_TOKEN = '####'
+ACCESS_TOKEN_SECRET = '####'
 
 # Database Information
 SERVER = 'localhost'
