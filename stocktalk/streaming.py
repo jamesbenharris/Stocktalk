@@ -107,7 +107,7 @@ class CoinListener(tweepy.StreamListener):
                 with open("%s%s_Tracker.txt" % (self.path, coin[0]), "a") as outfile:
                     outfile.write("%s,%d,%s,%d\n" % (time.strftime('%m/%d/%Y %H:%M:%S'), tempTracker['Volume'][coin[0]], tempTracker['Sentiment'][coin[0]]['avg'], tempTracker['Seconds']))
 
-        # PostGres DataBase
+        # PostgreSQL DataBase
         if self.database:
             db = self.db
             for coin in self.coins:
