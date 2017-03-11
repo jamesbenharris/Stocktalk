@@ -52,10 +52,22 @@ python -m nltk.downloader vader_lexicon
 from stocktalk import streaming
 
 # Credentials to access Twitter API 
-API_KEY = 'XXXXXXXXXX'
-API_SECRET = 'XXXXXXXXXX'
-ACCESS_TOKEN = 'XXXXXXXXXX'
-ACCESS_TOKEN_SECRET = 'XXXXXXXXXX'
+API_KEY = 'J82WF0b0sxRU1l8mZDEKEzeQR'
+API_SECRET = 'DcFs1kX416KDWCMvE4H7rnvivHu6P41c0S9HZMgLtdmm3r8WqQ'
+ACCESS_TOKEN = '248780999-CEol6eP8XkopuCbFOTAjwyUPgisTHVlWlrag8FiD'
+ACCESS_TOKEN_SECRET = 'CRQX9XmiwQVHMnJ7Cm4RtDd65ZFzuWdMNt08zFuCbqM15'
+
+# Database Information
+SERVER = 'localhost'
+DATABASE = 'Stock'
+TABLE = '"Sentiment"'
+DB_UN = ''
+DB_PWD = ''
+
+#Store DB Information 
+db = [SERVER,DATABASE,TABLE,DB_UN,DB_PWD]
+
+#Store Credentials
 credentials = [API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET]
 
 # First element must be ticker/name, proceeding elements are extra queries
@@ -63,17 +75,18 @@ TSLA = ['TSLA', 'Tesla']
 SNAP = ['SNAP', 'Snapchat']
 AAPL = ['AAPL', 'Apple']
 AMZN = ['AMZN', 'Amazon']
-
+YHOO = ['YHOO', 'Yahoo']
+GOOG = ['GOOG', 'Google']
 # Variables
-tickers = [TSLA,SNAP,AAPL,AMZN]  # Used for identification purposes
-queries =  TSLA+SNAP+AAPL+AMZN   # Filters tweets containing one or more query 
+tickers = [TSLA,SNAP,AAPL,AMZN,YHOO,GOOG]  # Used for identification purposes
+queries =  TSLA+SNAP+AAPL+AMZN+YHOO+GOOG  # Filters tweets containing one or more query 
 refresh = 30                     # Process and log data every 30 seconds
 
 # Create a folder to collect logs and temporary files
-path = "/Users/Anthony/Desktop/Data/"
+path = "/Users/benharris/Documents/Projects/Sentiment/data/"
 
-streaming(credentials, tickers, queries, refresh, path, \
-realtime=True, logTracker=True, logTweets=True, logSentiment=True, debug=True)
+streaming(db, credentials, tickers, queries, refresh, path, \
+realtime=True, logTracker=False, logTweets=False, logSentiment=True, debug=True, database=True)
 ```
 
 #### Realtime Visualization

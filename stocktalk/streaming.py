@@ -4,6 +4,7 @@ import copy
 import threading
 import codecs
 import tweepy
+import psycopg2
 from   tweepy.api import API
 
 # Special Exceptions
@@ -27,6 +28,19 @@ def getReversal(coins):
             reversal[term] = coin[0]
     return reversal
 
+def writeToDatabase(server, db, table, un, pwd, coin, tracker):
+    try:
+        connection_string = "host='%s' dbname='%s' user='%s' password='%s'" % (server,db,un,pwd)
+        conn = psycopg2.connect(connection_string)
+        cur = conn.cursor()
+        query = "insert into %s (ticker,sentiment,market) values ('%s',%.3f,'%s')" % (table, coin[0], tracker['Sentiment'][coin[0]]['avg'], 'SP500')
+        cur.execute(query)
+        conn.commit()
+        cur.close()
+        conn.close()
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+
 def writeUpdates(filename, coins, tracker):
     with open(filename, 'w') as outfile:
         for coin in coins:
@@ -49,7 +63,7 @@ def process(text):
 
 class CoinListener(tweepy.StreamListener):
 
-    def __init__(self, auth, coins, queries, refresh, path, realtime=False, logTracker=True, logTweets=True, logSentiment=False, debug=True): 
+    def __init__(self, db, auth, coins, queries, refresh, path, realtime=False, logTracker=True, logTweets=True, logSentiment=False, debug=True, database=True): 
         
         self.api          = tweepy.API(auth)
         self.coins        = coins
@@ -61,10 +75,12 @@ class CoinListener(tweepy.StreamListener):
         self.logTweets    = logTweets       
         self.logSentiment = logSentiment
         self.debug        = debug
+        self.database     = database
         self.processing   = False
         self.timer        = time.time()
         self.reversal     = getReversal(coins)
         self.tracker      = getTracker(coins)
+        self.db           = db
 
         # Initiate file for visualization
         if self.realtime:
@@ -91,6 +107,12 @@ class CoinListener(tweepy.StreamListener):
                 with open("%s%s_Tracker.txt" % (self.path, coin[0]), "a") as outfile:
                     outfile.write("%s,%d,%s,%d\n" % (time.strftime('%m/%d/%Y %H:%M:%S'), tempTracker['Volume'][coin[0]], tempTracker['Sentiment'][coin[0]]['avg'], tempTracker['Seconds']))
 
+        # PostGres DataBase
+        if self.database:
+            db = self.db
+            for coin in self.coins:
+                writeToDatabase(db[0],db[1],db[2],db[3],db[4],coin,tempTracker)
+                
         # Data visualization
         if self.realtime:
             writeUpdates(('%supdates.txt' % self.path), self.coins, tempTracker)
@@ -156,7 +178,7 @@ class CoinListener(tweepy.StreamListener):
  
 # Streaming --------------------------------------------------
 
-def streaming(credentials, coins, queries, refresh, path, realtime=False, logTracker=True, logTweets=True, logSentiment=False, debug=True):
+def streaming(db,credentials, coins, queries, refresh, path, realtime=False, logTracker=True, logTweets=True, logSentiment=False, debug=True, database=True):
 
     # User Error Checks
     if len(coins)   <= 0:  print("Error: You must include at least one coin."); return
@@ -177,7 +199,7 @@ def streaming(credentials, coins, queries, refresh, path, realtime=False, logTra
         # Start streaming -----------------------------
         try:
             print("Streaming Now...")
-            listener = CoinListener(auth, coins, queries, refresh, path, realtime, logTracker, logTweets, logSentiment, debug)
+            listener = CoinListener(db, auth, coins, queries, refresh, path, realtime, logTracker, logTweets, logSentiment, debug)
             stream = tweepy.Stream(auth, listener)
             stream.filter(track=queries)
 
