@@ -38,8 +38,8 @@ def writeToDatabase(server, db, table, un, pwd, coin, tracker,source):
         conn.commit()
         cur.close()
         conn.close()
-    except:
-        print("Unexpected error:", sys.exc_info()[0])
+    except BaseException as e:
+        print("Unexpected error: %s", str(e))
 
 def writeUpdates(filename, coins, tracker):
     with open(filename, 'w') as outfile:
