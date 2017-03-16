@@ -28,12 +28,12 @@ def getReversal(coins):
             reversal[term] = coin[0]
     return reversal
 
-def writeToDatabase(server, db, table, un, pwd, coin, tracker):
+def writeToDatabase(server, db, table, un, pwd, coin, tracker,source):
     try:
         connection_string = "host='%s' dbname='%s' user='%s' password='%s'" % (server,db,un,pwd)
         conn = psycopg2.connect(connection_string)
         cur = conn.cursor()
-        query = "insert into %s (ticker,sentiment,market) values ('%s',%.3f,'%s')" % (table, coin[0], tracker['Sentiment'][coin[0]]['avg'], 'SP500')
+        query = "insert into %s (source,ticker,sentiment,market) values ('%s','%s',%.3f,'%s')" % (table, source, coin[0], tracker['Sentiment'][coin[0]]['avg'], 'SP500')
         cur.execute(query)
         conn.commit()
         cur.close()
@@ -111,7 +111,7 @@ class CoinListener(tweepy.StreamListener):
         if self.database:
             db = self.db
             for coin in self.coins:
-                writeToDatabase(db[0],db[1],db[2],db[3],db[4],coin,tempTracker)
+                writeToDatabase(db[0],db[1],db[2],db[3],db[4],coin,tempTracker,'Twitter')
                 
         # Data visualization
         if self.realtime:
